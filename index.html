@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#2b2350">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sternenpfötchen">
+  <meta name="description" content="Ein gemütliches Knobelspiel: Hilf dem Mondkätzchen Luma, die verlorenen Sternchen nach Hause zu bringen.">
+  <title>Sternenpfötchen</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-screen="title">
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <main id="app">
+    <!-- Titel -->
+    <section id="scr-title" class="screen active">
+      <button class="icon-btn btn-settings corner" aria-label="Einstellungen">⚙</button>
+      <div class="title-wrap">
+        <canvas id="title-art" aria-hidden="true"></canvas>
+        <h1 class="logo">Sternen<span>pfötchen</span></h1>
+        <p class="subtitle">Lumas Reise durch den Traumgarten</p>
+        <button id="btn-play" class="btn primary big">Spielen</button>
+        <div class="title-row">
+          <button id="btn-wardrobe" class="btn soft">🎀 Garderobe</button>
+          <button id="btn-book" class="btn soft">✨ Sternbuch</button>
+        </div>
+        <p id="title-stats" class="stats"></p>
+      </div>
+    </section>
+
+    <!-- Weltkarte -->
+    <section id="scr-map" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-back aria-label="Zurück">‹</button>
+        <h2>Traumgarten</h2>
+        <span id="map-stars" class="pill"></span>
+      </header>
+      <div id="world-list" class="scroll"></div>
+    </section>
+
+    <!-- Levelauswahl -->
+    <section id="scr-world" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-back aria-label="Zurück">‹</button>
+        <h2 id="world-title"></h2>
+        <span id="world-stars" class="pill"></span>
+      </header>
+      <div class="scroll world-body">
+        <div class="con-box">
+          <canvas id="world-con" aria-hidden="true"></canvas>
+          <div id="world-con-name" class="con-name"></div>
+        </div>
+        <div id="level-grid"></div>
+      </div>
+    </section>
+
+    <!-- Spiel -->
+    <section id="scr-game" class="screen">
+      <header class="hud">
+        <button class="icon-btn" data-back aria-label="Zurück zur Levelauswahl">‹</button>
+        <div id="game-title" class="game-title"></div>
+        <div class="hud-right">
+          <div class="moves"><b id="hud-moves">0</b><small>Züge</small></div>
+          <div id="hud-goal" class="goal"></div>
+        </div>
+      </header>
+      <div id="board-wrap"><canvas id="board"></canvas></div>
+      <div class="controls">
+        <div class="tools">
+          <button id="btn-undo" class="tool" aria-label="Zug zurück"><span>↶</span><small>Zurück</small></button>
+          <button id="btn-restart" class="tool" aria-label="Neu starten"><span>⟲</span><small>Neu</small></button>
+          <button id="btn-hint" class="tool" aria-label="Tipp"><span>🐾</span><small>Tipp</small></button>
+          <button class="tool btn-settings" aria-label="Einstellungen"><span>⚙</span><small>Menü</small></button>
+        </div>
+        <div id="dpad" aria-label="Steuerkreuz">
+          <button data-dir="0" class="d-up" aria-label="Hoch">▲</button>
+          <button data-dir="3" class="d-left" aria-label="Links">◀</button>
+          <button data-dir="1" class="d-right" aria-label="Rechts">▶</button>
+          <button data-dir="2" class="d-down" aria-label="Runter">▼</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Garderobe -->
+    <section id="scr-wardrobe" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-back aria-label="Zurück">‹</button>
+        <h2>Garderobe</h2>
+        <span id="ward-stars" class="pill"></span>
+      </header>
+      <div class="scroll ward-body">
+        <canvas id="ward-preview" aria-hidden="true"></canvas>
+        <div class="ward-tabs">
+          <button class="ward-tab active" data-tab="hat">Kopf</button>
+          <button class="ward-tab" data-tab="neck">Hals</button>
+          <button class="ward-tab" data-tab="fur">Fell</button>
+        </div>
+        <div id="ward-grid"></div>
+      </div>
+    </section>
+
+    <!-- Sternbuch -->
+    <section id="scr-book" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-back aria-label="Zurück">‹</button>
+        <h2>Sternbuch</h2>
+        <span class="pill">✨</span>
+      </header>
+      <div class="scroll book-body">
+        <div id="book-stats" class="book-stats"></div>
+        <h3>Sternbilder</h3>
+        <div id="book-cons"></div>
+        <h3>Freunde</h3>
+        <div id="book-friends"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dialoge -->
+  <div id="story" class="overlay" role="dialog" aria-live="polite">
+    <button id="story-skip" class="skip">Überspringen ⏭</button>
+    <div id="story-box">
+      <canvas id="story-portrait" aria-hidden="true"></canvas>
+      <div class="story-content">
+        <div id="story-name"></div>
+        <div id="story-text"></div>
+        <div class="story-more">▼</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gewonnen -->
+  <div id="win" class="overlay" role="dialog">
+    <div class="card win-card">
+      <h2 id="win-title">Geschafft!</h2>
+      <div id="win-stars"></div>
+      <p id="win-info"></p>
+      <div id="win-extra"></div>
+      <button id="btn-next" class="btn primary">Nächstes Level</button>
+      <div class="win-row">
+        <button id="btn-replay" class="btn soft">⟲ Nochmal</button>
+        <button id="btn-tomap" class="btn soft">☰ Übersicht</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Einstellungen -->
+  <div id="settings" class="overlay" role="dialog">
+    <div class="card">
+      <h2>Einstellungen</h2>
+      <label class="toggle"><span>🎵 Musik</span><input type="checkbox" id="set-music"><i></i></label>
+      <label class="toggle"><span>🔔 Geräusche</span><input type="checkbox" id="set-sfx"><i></i></label>
+      <label class="toggle"><span>✚ Steuerkreuz</span><input type="checkbox" id="set-dpad"><i></i></label>
+      <p class="help">Steuerung: Wischen, auf das Feld neben Luma tippen, Steuerkreuz oder Pfeiltasten/WASD.
+        <br>Tastatur: <b>Z</b> zurück · <b>R</b> neu · <b>H</b> Tipp</p>
+      <button id="set-story" class="btn soft">📖 Geschichte nochmal ansehen</button>
+      <button id="set-reset" class="btn danger">Fortschritt zurücksetzen</button>
+      <button id="settings-close" class="btn primary">Fertig</button>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+
+  <script src="js/engine.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

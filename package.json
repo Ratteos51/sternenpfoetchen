@@ -1,0 +1,13 @@
+{
+  "name": "sternenpfoetchen",
+  "version": "1.0.0",
+  "description": "Gemütliches Knobelspiel: Hilf dem Mondkätzchen Luma, die Sternchen nach Hause zu bringen.",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes http-server -p 8080 -c-1 .",
+    "verify": "node tools/verify.js",
+    "icons": "node tools/make-icons.js",
+    "generate": "node tools/generate.js"
+  },
+  "license": "UNLICENSED"
+}
